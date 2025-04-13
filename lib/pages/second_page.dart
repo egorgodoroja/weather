@@ -36,15 +36,15 @@ class WeatherTile extends StatelessWidget{
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text("${weather.date}", style: bold(weight: FontWeight.w600)),
-            SizedBox(width: MediaQuery.of(context).size.width*0.3),
+            Text("${weather.date}", style: bold(size: 20)),
+            SizedBox(width: MediaQuery.of(context).size.width*0.27),
             Column(
               children: [
                 Text("${weather.mintemp}°С", style: bold()),
                 Text("MIN", style: bold(color: Colors.red, size: 10))
               ]
             ),
-            const SizedBox(width: 5),
+            const SizedBox(width: 10),
             Column(
               children: [
                 Text("${weather.maxtemp}°С", style: bold()),
@@ -52,7 +52,7 @@ class WeatherTile extends StatelessWidget{
               ]
             ),
             const SizedBox(width: 5),
-            Image.network(weather.weatherCondition.icon, height: 18, width: 18)
+            Image.network(weather.weatherCondition.icon, height: 30, width: 30)
           ]
         )
       )

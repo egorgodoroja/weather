@@ -17,7 +17,7 @@ class FirstPage extends StatelessWidget{
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(state.weatherData.currentWeather.weatherCondition.text, style: bold(size: 28), textAlign: TextAlign.center,),
-                Image.network(state.weatherData.currentWeather.weatherCondition.icon),
+                Image.network(state.weatherData.currentWeather.weatherCondition.icon, width: 60, height: 60),
                 SizedBox(height: 20),
                 Text("${state.weatherData.currentWeather.temp_c} °С", style: bold(size: 30), textAlign: TextAlign.center,),
                 SizedBox(height: 5),

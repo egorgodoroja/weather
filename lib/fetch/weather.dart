@@ -8,7 +8,7 @@ class Date{
   Date(this.year, this.month, this.day);
   static Date parse(String date){
     List<int> list = date.split("-").map<int>(int.parse).toList();
-    return Date(list[0], list[1], list[3]);
+    return Date(list[0], list[1], list[2]);
   }
   @override
   String toString(){
@@ -33,7 +33,7 @@ class CurrentWeather{
   CurrentWeather(this.weatherCondition, this.temp_c, this.temp_f, this.feelsLike, this.isDay);
   static CurrentWeather fromJson(Map<String, dynamic> json){
     return CurrentWeather(
-        WeatherCondition.fromJson(json["current"]),
+        WeatherCondition.fromJson(json["condition"]),
         json["temp_c"],
         json["temp_f"],
         json["feelslike_c"],
@@ -48,7 +48,7 @@ class HourlyWeather{
   final double temp_f;
   final double feelsLike;
   HourlyWeather(this.hour, this.weatherCondition, this.temp_c, this.temp_f, this.feelsLike);
-  static HourlyWeather fromJson(Map<String, dynamic> json){
+  static HourlyWeather fromJson(dynamic json){
     return HourlyWeather(
         hourFromJson(json["time"]),
         WeatherCondition.fromJson(json["condition"]),
@@ -68,14 +68,19 @@ class DailyWeather{
   final double maxtemp;
   final double mintemp;
   DailyWeather(this.date, this.weatherCondition, this.hourlyWeather, this.maxtemp, this.mintemp);
-  static DailyWeather fromJson(Map<String, dynamic> json){
-    return DailyWeather(
-        Date.parse(json["date"]),
-        json["day"]["condition"],
-        (json["hour"] as List<Map<String, dynamic>>).map<HourlyWeather>(HourlyWeather.fromJson).toList(),
-        json["day"]["maxtemp_c"],
-        json["day"]["mintemp_c"]
-    );
+  static DailyWeather fromJson(dynamic json){
+    try {
+      return DailyWeather(
+          Date.parse(json["date"]),
+          WeatherCondition.fromJson(json["day"]["condition"]),
+          (json["hour"] as List<dynamic>).map<HourlyWeather>(
+              HourlyWeather.fromJson).toList(),
+          json["day"]["maxtemp_c"],
+          json["day"]["mintemp_c"]
+      );
+    }catch(e){
+      throw Exception("DailyWeather.fromJson error $e");
+    }
   }
 }
 class WeatherData{
@@ -83,9 +88,15 @@ class WeatherData{
   final List<DailyWeather> dailyWeather;
   WeatherData(this.currentWeather, this.dailyWeather);
   static WeatherData fromJson(Map<String, dynamic> json){
-    return WeatherData(
-        CurrentWeather.fromJson(json["current"]),
-        (json["forecast"]["forecastday"] as List<Map<String, dynamic>>).map<DailyWeather>(DailyWeather.fromJson).toList()
-    );
+    try {
+      print(json["forecast"]["forecastday"]);
+      return WeatherData(
+          CurrentWeather.fromJson(json["current"]),
+          (json["forecast"]["forecastday"] as List).map<
+              DailyWeather>(DailyWeather.fromJson).toList()
+      );
+    }catch(e){
+      throw Exception("Error in WeatherData.fromJson $e");
+    }
   }
 }
