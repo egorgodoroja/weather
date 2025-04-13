@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
 import "package:weather/bloc.dart";
+import "../styles.dart";
 
 class FirstPage extends StatelessWidget{
   const FirstPage({super.key});
@@ -15,11 +16,14 @@ class FirstPage extends StatelessWidget{
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(state.weatherData.weatherDescription, style: bold(size: 28), textAlign: TextAlign.center,),
+                Text(state.weatherData.currentWeather.weatherCondition.text, style: bold(size: 28), textAlign: TextAlign.center,),
+                Image.network(state.weatherData.currentWeather.weatherCondition.icon),
                 SizedBox(height: 20),
-                Text("${state.weatherData.temp_c} °С", style: bold(size: 30), textAlign: TextAlign.center,),
+                Text("${state.weatherData.currentWeather.temp_c} °С", style: bold(size: 30), textAlign: TextAlign.center,),
                 SizedBox(height: 5),
-                Text("${state.weatherData.temp_f} °F", style: bold(size: 30), textAlign: TextAlign.center,)
+                Text("${state.weatherData.currentWeather.temp_f} °F", style: bold(size: 30), textAlign: TextAlign.center,),
+                SizedBox(height: 10),
+                Text("Feels like ${state.weatherData.currentWeather.feelsLike}°С", style: bold(size: 20))
               ],
             ),
           );
@@ -37,24 +41,4 @@ class FirstPage extends StatelessWidget{
       }
     );
   }
-  static Widget appear({required Widget child}){
-    return FutureBuilder<bool>(
-      future: Future.delayed(Duration(milliseconds: 300), ()=>true),
-      builder: (context, snapshot){
-        return AnimatedOpacity(
-          opacity: (snapshot.data ?? false) ? 1:0,
-          duration: Duration(milliseconds: 500),
-          child: child
-        );
-      }
-    );
-  }
-}
-TextStyle bold({Color color = Colors.white, FontWeight weight = FontWeight.w800, double? size}){
-  return TextStyle(
-    color: color,
-    fontWeight: weight,
-    fontSize: size,
-    fontFamily: "Geologica"
-  );
 }

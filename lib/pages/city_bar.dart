@@ -1,8 +1,7 @@
 import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
 import "package:weather/bloc.dart";
-
-import "first_page.dart";
+import "../styles.dart";
 
 class CityBar extends StatelessWidget{
   CityBar({super.key});
@@ -12,17 +11,27 @@ class CityBar extends StatelessWidget{
       child: BlocBuilder<CityBloc, CityState>(
         builder: (context, state) {
           return GestureDetector(
+            onTap: ()=>context.read<CityBloc>().add(NewCity()),
             child: AnimatedContainer(
               duration: Duration(milliseconds: 300),
               width: state is NoCity ? MediaQuery.of(context).size.width*0.75 : MediaQuery.of(context).size.width*0.8,
-              height: state is NoCity ? 65 : 50,
-              padding: EdgeInsets.all(5.0),
+              height: 65,
+              padding: EdgeInsets.all(3.0),
               decoration: BoxDecoration(
                 color: Colors.white,
-                border: Border.all(color: Color(0xff0cf22b)),
-                borderRadius: BorderRadius.circular(25)
+                border: Border.all(color: Color(0xff0cf22b), width: 4),
+                borderRadius: BorderRadius.circular(33)
               ),
-              child: state is CityExists ? Text(state.city.toUpperCase(), style: bold(color: Color(0xff0cf22b), size: 30)):
+              child: Center(
+                child: state is CityExists ?
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(Icons.location_on, color: Color(0xff0cf22b), size: 35),
+                        const SizedBox(width: 10),
+                        Text(state.city.toUpperCase(), style: bold(size: 30, color: Color(0xff0cf22b)))
+                      ]
+                    ):
                   TextField(
                     controller: controller,
                     style: bold(
@@ -39,7 +48,7 @@ class CityBar extends StatelessWidget{
                     ),
                     onEditingComplete: ()=>onTap(context),
                   )
-            ),
+            )),
           );
         }
       )

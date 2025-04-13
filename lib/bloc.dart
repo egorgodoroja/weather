@@ -1,13 +1,16 @@
 import "package:flutter_bloc/flutter_bloc.dart";
 import "package:shared_preferences/shared_preferences.dart";
 import "package:flutter/material.dart";
-import "fetch.dart";
+import "fetch/fetch.dart";
+import "fetch/weather.dart";
 
 late SharedPreferences prefs;
 
 abstract class CityEvent{}
 
 class LoadCityFromPrefs extends CityEvent{}
+
+class NewCity extends CityEvent{}
 
 class InputCityManually extends CityEvent{
   final String city;
@@ -20,6 +23,8 @@ class LoadingCity extends CityState{}
 
 class NoCity extends CityState{}
 
+class PrevCityEvent extends CityEvent{}
+
 class CityExists extends CityState{
   final String city;
   final Alignment alignment;
@@ -29,8 +34,12 @@ class CityExists extends CityState{
 
 class CityBloc extends Bloc<CityEvent, CityState>{
   CityBloc():super(LoadingCity()){
+    on<NewCity>(_onNewCity);
     on<LoadCityFromPrefs>(_onLoadCityFromPrefs);
     on<InputCityManually>(_onInputCityManually);
+  }
+  Future<void> _onNewCity(CityEvent event, Emitter<CityState> emit)async{
+    emit(NoCity());
   }
   Future<void> _onLoadCityFromPrefs(LoadCityFromPrefs event, Emitter<CityState> emit)async{
     prefs = await SharedPreferences.getInstance();
@@ -43,8 +52,7 @@ class CityBloc extends Bloc<CityEvent, CityState>{
   }
   Future<void> _onInputCityManually(InputCityManually event, Emitter<CityState> emit)async{
     emit(CityExists(event.city, Alignment.center));
-    await Future.delayed(Duration(milliseconds: 200));
-    emit(CityExists(event.city));
+    await prefs.setString('city', event.city);
   }
 }
 
@@ -72,7 +80,7 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState>{
   }
   Future<void> _onLoadWeather(LoadWeather event, Emitter<WeatherState> emit)async{
     try{
-      WeatherData weatherData = await fetchCurrentWeather(event.city);
+      WeatherData weatherData = await fetchWeather(event.city);
       emit(WeatherLoaded(weatherData));
       await prefs.setString("city", event.city);
     }catch(e){
